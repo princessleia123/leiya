@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Create a beautiful themed countdown for any occasion." />
+  <title>Daydream — Countdown Creator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="page-decor" id="pageDecor" aria-hidden="true"></div>
+  <header class="site-header">
+    <a class="brand" href="#" aria-label="Daydream home">
+      <span class="brand-mark">✦</span>
+      <span>daydream</span>
+    </a>
+    <div class="header-note"><span></span> Your moment is waiting</div>
+  </header>
+
+  <main>
+    <section class="intro">
+      <p class="eyebrow">COUNTDOWN CREATOR</p>
+      <h1>Make the wait<br><em>feel magical.</em></h1>
+      <p class="intro-copy">Describe the world you want, and watch your entire countdown website come to life.</p>
+    </section>
+
+    <section class="creator-shell">
+      <form class="controls" id="countdownForm">
+        <div class="form-section">
+          <div class="section-heading">
+            <span class="section-number">01</span>
+            <div><h2>The occasion</h2><p>What are we looking forward to?</p></div>
+          </div>
+
+          <label class="field wide">
+            <span>COUNTDOWN TITLE</span>
+            <input id="eventTitle" type="text" value="The Big Day" maxlength="36" placeholder="My special day" />
+          </label>
+          <div class="field-row">
+            <label class="field">
+              <span>EVENT DATE</span>
+              <input id="eventDate" type="date" required />
+            </label>
+            <label class="field">
+              <span>EVENT TIME</span>
+              <input id="eventTime" type="time" value="12:00" required />
+            </label>
+            <label class="field">
+              <span>STARTING FROM</span>
+              <input id="currentDate" type="date" required />
+            </label>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="section-heading">
+            <span class="section-number">02</span>
+            <div><h2>Describe your dream</h2><p>Tell us how the whole website should look and feel.</p></div>
+          </div>
+          <label class="field prompt-field">
+            <span>YOUR THEME & DECORATIONS</span>
+            <textarea id="designPrompt" rows="5" placeholder="Try: A magical midnight forest with deep blue colors, glowing stars, fireflies, moons and wildflowers..."></textarea>
+          </label>
+          <div class="prompt-examples" aria-label="Prompt ideas">
+            <button type="button" data-prompt="A magical midnight sky with navy blue, gold moons, glowing stars and sparkles">Midnight magic</button>
+            <button type="button" data-prompt="A joyful tropical beach party with aqua water, coral colors, palm trees, sunshine and confetti">Beach party</button>
+            <button type="button" data-prompt="A romantic enchanted garden with soft pink, lavender, roses, butterflies and hearts">Garden romance</button>
+          </div>
+          <button class="create-button" id="createDesign" type="button"><span>Create my website</span><b>✦</b></button>
+          <p class="design-status" id="designStatus" role="status"></p>
+          <div class="quick-style-label"><span>OR CHOOSE A QUICK STYLE</span></div>
+          <div class="theme-grid" id="themeGrid" role="radiogroup" aria-label="Choose a theme"></div>
+        </div>
+
+        <div class="form-section last">
+          <div class="section-heading">
+            <span class="section-number">03</span>
+            <div><h2>Add some magic</h2><p>Sprinkle in the little things.</p></div>
+          </div>
+          <div class="decorations" id="decorationList"></div>
+        </div>
+      </form>
+
+      <aside class="preview-column">
+        <div class="preview-label"><span>LIVE PREVIEW</span><span class="live-dot"></span></div>
+        <div class="preview" id="preview">
+          <div class="texture"></div>
+          <div class="decor-layer" id="decorLayer" aria-hidden="true"></div>
+          <div class="preview-content">
+            <p class="preview-kicker">COUNTING DOWN TO</p>
+            <h2 id="previewTitle">The Big Day</h2>
+            <div class="divider"><span>✦</span></div>
+            <div class="countdown" aria-live="polite">
+              <div><strong id="days">00</strong><span>DAYS</span></div>
+              <i></i>
+              <div><strong id="hours">00</strong><span>HOURS</span></div>
+              <i></i>
+              <div><strong id="minutes">00</strong><span>MINUTES</span></div>
+              <i></i>
+              <div><strong id="seconds">00</strong><span>SECONDS</span></div>
+            </div>
+            <p class="date-line" id="dateLine"></p>
+          </div>
+          <p class="made-with">MADE WITH <span>♥</span> & DAYDREAM</p>
+        </div>
+        <button class="share-button" id="copyButton" type="button"><span>Copy countdown details</span><b>↗</b></button>
+        <p class="share-status" id="shareStatus" role="status"></p>
+      </aside>
+    </section>
+
+    <section class="about-leiya" aria-labelledby="aboutLeiyaTitle">
+      <div class="about-photo-wrap">
+        <img src="assets/leiya-portfolio.jpg" alt="Leiya's vibrant pink orchid photograph" class="about-photo" />
+        <span class="photo-flourish">✦</span>
+      </div>
+      <div class="about-copy">
+        <p class="eyebrow">MEET THE CREATOR</p>
+        <h2 id="aboutLeiyaTitle">Dreamed up by<br><em>Leiya.</em></h2>
+        <p>I create bright, personal experiences that turn special moments into something worth looking forward to.</p>
+        <span class="signature">Leiya</span>
+      </div>
+    </section>
+  </main>
+
+  <footer><span>✦</span><p>Every day brings you a little closer. <small>Created by Leiya</small></p><span>✦</span></footer>
+  <script src="script.js"></script>
+</body>
+</html>

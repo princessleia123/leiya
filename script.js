@@ -1,0 +1,324 @@
+const themes = [
+  { id: 'sunset', name: 'Sunset Glow', note: 'Warm & dreamy', bg: '#c95f4c', fg: '#fff6e9', soft: 'rgba(255,246,233,.68)', swatch: 'linear-gradient(145deg,#e99a77,#b94d45)', spark: '#ffe7a5' },
+  { id: 'midnight', name: 'Midnight', note: 'Deep & celestial', bg: '#20243f', fg: '#f5eee1', soft: 'rgba(245,238,225,.64)', swatch: 'linear-gradient(145deg,#343b67,#17192e)', spark: '#f2d488' },
+  { id: 'meadow', name: 'Wild Meadow', note: 'Fresh & natural', bg: '#637963', fg: '#fff9e9', soft: 'rgba(255,249,233,.68)', swatch: 'linear-gradient(145deg,#9faf88,#506753)', spark: '#f5df9b' },
+  { id: 'blush', name: 'Soft Blush', note: 'Sweet & romantic', bg: '#dba0a0', fg: '#fffaf2', soft: 'rgba(255,250,242,.72)', swatch: 'linear-gradient(145deg,#ecc4bb,#ce898e)', spark: '#fff1bb' }
+];
+
+const decorations = [
+  { id: 'stars', label: 'Stars', icon: '✦', items: ['✦','⋆','✧','★','⋆'] },
+  { id: 'flowers', label: 'Flowers', icon: '❀', items: ['❀','✿','❁','❃','❀'] },
+  { id: 'hearts', label: 'Hearts', icon: '♥', items: ['♥','♡','♥','❥','♡'] },
+  { id: 'confetti', label: 'Confetti', icon: '◆', items: ['●','◆','▪','▲','●','◇'] },
+  { id: 'sparkles', label: 'Sparkles', icon: '✧', items: ['✧','✦','⋆','✧','✦'] },
+  { id: 'balloons', label: 'Balloons', icon: '◉', items: ['◉','◯','●','◉','○'] },
+  { id: 'nature', label: 'Botanical', icon: '❧', items: ['❧','♣','❦','♠','❧'] },
+  { id: 'sunshine', label: 'Sun & Moon', icon: '☀', items: ['☀','☾','☼','☁','✦'] },
+  { id: 'none', label: 'None', icon: '○', items: [] }
+];
+
+const themeGrid = document.querySelector('#themeGrid');
+const decorationList = document.querySelector('#decorationList');
+const preview = document.querySelector('#preview');
+const titleInput = document.querySelector('#eventTitle');
+const eventDateInput = document.querySelector('#eventDate');
+const eventTimeInput = document.querySelector('#eventTime');
+const currentDateInput = document.querySelector('#currentDate');
+const decorLayer = document.querySelector('#decorLayer');
+const pageDecor = document.querySelector('#pageDecor');
+const designPrompt = document.querySelector('#designPrompt');
+let activeTheme = themes[0];
+let activeDecor = new Set(['stars', 'sparkles']);
+let customSymbols = [];
+let lightingMode = 'none';
+let activeLightColors = [];
+
+const designWorlds = [
+  { words: ['midnight','night','space','galaxy','celestial','moon','starry'], paper:'#11162d', ink:'#f7efdf', muted:'#aaaac0', line:'#343955', accent:'#e5c66f', surface:'rgba(255,255,255,.06)', glow:'rgba(94,113,255,.18)', bg:'#20294d', fg:'#fff5d7', soft:'rgba(255,245,215,.65)' },
+  { words: ['ocean','beach','tropical','sea','aqua','mermaid'], paper:'#e7f4ef', ink:'#173c42', muted:'#66888a', line:'#bad8d1', accent:'#ed775f', surface:'rgba(255,255,255,.5)', glow:'rgba(42,173,181,.16)', bg:'#268c95', fg:'#fff9df', soft:'rgba(255,249,223,.7)' },
+  { words: ['forest','woodland','earthy','nature','camping'], paper:'#edf0e2', ink:'#283a2b', muted:'#70806b', line:'#cbd3bc', accent:'#b1663f', surface:'rgba(255,255,255,.35)', glow:'rgba(75,113,70,.14)', bg:'#48664c', fg:'#fff8df', soft:'rgba(255,248,223,.68)' },
+  { words: ['romantic','garden','pink','blush','princess','fairy','lavender'], paper:'#f8edf0', ink:'#53323f', muted:'#987481', line:'#e8cfd7', accent:'#c85f83', surface:'rgba(255,255,255,.42)', glow:'rgba(211,109,155,.14)', bg:'#c9809b', fg:'#fff8ee', soft:'rgba(255,248,238,.72)' },
+  { words: ['sunset','warm','boho','desert','terracotta'], paper:'#f5eee2', ink:'#412d25', muted:'#8b746a', line:'#ddcfc0', accent:'#d45e45', surface:'rgba(255,255,255,.3)', glow:'rgba(212,94,69,.12)', bg:'#bd5947', fg:'#fff5e7', soft:'rgba(255,245,231,.68)' },
+  { words: ['party','birthday','colorful','rainbow','joyful','fun'], paper:'#fff7df', ink:'#332b4f', muted:'#746d8b', line:'#e5d7bf', accent:'#7657d5', surface:'rgba(255,255,255,.48)', glow:'rgba(247,98,136,.15)', bg:'#7657d5', fg:'#fffbea', soft:'rgba(255,251,234,.72)' },
+  { words: ['winter','snow','ice','frozen','christmas'], paper:'#edf5f7', ink:'#263c4d', muted:'#728894', line:'#cbdde2', accent:'#527fa0', surface:'rgba(255,255,255,.52)', glow:'rgba(99,165,196,.15)', bg:'#668da8', fg:'#ffffff', soft:'rgba(255,255,255,.72)' }
+];
+
+const symbolRules = [
+  { words:['star','space','galaxy','celestial'], symbols:['✦','★','⋆','✧','✦'] }, { words:['moon','night'], symbols:['☾','✦','⋆'] },
+  { words:['flower','garden','rose','floral'], symbols:['❀','✿','❁','❃','❦'] }, { words:['heart','romantic','love','wedding'], symbols:['♥','♡','❥','♥'] },
+  { words:['butterfly','fairy'], symbols:['Ƹ̵̡Ӝ̵̨̄Ʒ','✧','❦'] }, { words:['beach','ocean','sea','tropical'], symbols:['≈','≋','☀','◇','∿'] },
+  { words:['palm'], symbols:['♠','❧','☀'] }, { words:['forest','leaf','nature','woodland'], symbols:['❧','♣','♠','❦','✦'] },
+  { words:['sun','sunshine','summer'], symbols:['☀','☼','✺','✦'] }, { words:['snow','winter','ice'], symbols:['❄','❅','❆','✦'] },
+  { words:['party','birthday','confetti','celebration'], symbols:['●','◆','▲','■','✦','◉'] }, { words:['firefly','glowing','sparkle','magic'], symbols:['✦','·','✧','⋆'] },
+  { words:['cat','kitten','dog','puppy','animal'], symbols:['♠','●','♥','❧'] },
+  { words:['music','concert','dance'], symbols:['♪','♫','♬','✦'] }, { words:['food','dinner','restaurant'], symbols:['❦','●','◇','✦'] },
+  { words:['book','library','reading'], symbols:['❦','§','✧','☾'] }, { words:['sports','game','football','soccer'], symbols:['★','●','◆','✦'] },
+  { words:['travel','vacation','trip','airplane'], symbols:['✈','◇','✦','⌖'] }, { words:['baby','shower'], symbols:['♡','○','⋆','❦'] },
+  { words:['halloween','spooky','ghost'], symbols:['☾','♠','✦','☠'] }, { words:['christmas','holiday'], symbols:['♠','★','❄','✦'] },
+  { words:['graduation','graduate'], symbols:['★','◆','✦','❦'] }, { words:['coffee','cafe'], symbols:['♨','❦','♡'] }
+];
+
+const colorHues = {
+  red: 5, coral: 12, orange: 28, gold: 44, yellow: 52, lime: 82,
+  green: 132, mint: 158, teal: 178, aqua: 188, blue: 218, navy: 228,
+  purple: 270, violet: 282, lavender: 276, pink: 332, rose: 344, brown: 24
+};
+
+function localISO(date) {
+  const offset = date.getTimezoneOffset() * 60000;
+  return new Date(date.getTime() - offset).toISOString().slice(0, 10);
+}
+
+const today = new Date();
+const tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+currentDateInput.value = localISO(today);
+eventDateInput.value = localISO(tomorrow);
+eventDateInput.min = currentDateInput.value;
+
+themes.forEach(theme => {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = `theme-card${theme.id === activeTheme.id ? ' active' : ''}`;
+  button.setAttribute('role', 'radio');
+  button.setAttribute('aria-checked', theme.id === activeTheme.id);
+  button.innerHTML = `<div class="theme-swatch" style="--swatch:${theme.swatch};--spark:${theme.spark}"></div><strong>${theme.name}</strong><small>${theme.note}</small>`;
+  button.addEventListener('click', () => {
+    activeTheme = theme;
+    customSymbols = [];
+    lightingMode = 'none';
+    activeLightColors = [];
+    preview.classList.remove('lights-moving', 'lights-flashing');
+    document.querySelectorAll('.theme-card').forEach(card => {
+      const selected = card === button;
+      card.classList.toggle('active', selected);
+      card.setAttribute('aria-checked', selected);
+    });
+    applyTheme(true);
+  });
+  themeGrid.appendChild(button);
+});
+
+decorations.forEach(decor => {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = `decor-button${activeDecor.has(decor.id) ? ' active' : ''}`;
+  button.innerHTML = `<span>${decor.icon}</span>${decor.label}`;
+  button.addEventListener('click', () => {
+    customSymbols = [];
+    if (decor.id === 'none') {
+      activeDecor.clear();
+    } else {
+      activeDecor.delete('none');
+      activeDecor.has(decor.id) ? activeDecor.delete(decor.id) : activeDecor.add(decor.id);
+      if (!activeDecor.size) activeDecor.add('none');
+    }
+    document.querySelectorAll('.decor-button').forEach((item, index) => item.classList.toggle('active', activeDecor.has(decorations[index].id)));
+    renderDecorations();
+  });
+  decorationList.appendChild(button);
+});
+
+function applyTheme(updateWholeSite = false) {
+  preview.style.setProperty('--preview-bg', activeTheme.bg);
+  preview.style.setProperty('--preview-fg', activeTheme.fg);
+  preview.style.setProperty('--preview-soft', activeTheme.soft);
+  if (updateWholeSite) {
+    const quickWorlds = { sunset: designWorlds[4], midnight: designWorlds[0], meadow: designWorlds[2], blush: designWorlds[3] };
+    applyGlobalPalette(quickWorlds[activeTheme.id]);
+  }
+  renderDecorations();
+}
+
+function renderDecorations() {
+  decorLayer.innerHTML = '';
+  const positions = [[7,10],[83,12],[12,75],[89,70],[6,44],[92,39],[22,6],[74,84]];
+  const symbols = [];
+  customSymbols.forEach(symbol => symbols.push(symbol));
+  [...activeDecor].filter(id => id !== 'none').forEach(id => {
+    const decor = decorations.find(item => item.id === id);
+    if (decor) symbols.push(...decor.items);
+  });
+  if (customSymbols.length) activeDecor = new Set();
+  let cursor = 0;
+  symbols.slice(0, 14).forEach((symbol, index) => {
+      const [x, y] = positions[cursor++ % positions.length];
+      const el = document.createElement('span');
+      el.className = 'decor';
+      el.textContent = symbol;
+      el.style.cssText = `left:${x}%;top:${y}%;font-size:${14 + (index % 3) * 6}px;color:${activeTheme.fg};opacity:${.35 + (index % 3) * .18}`;
+      decorLayer.appendChild(el);
+  });
+  renderPageDecorations(symbols);
+}
+
+function renderPageDecorations(symbols) {
+  pageDecor.innerHTML = '';
+  const positions = [[3,16],[91,21],[6,66],[94,78],[17,90],[81,51],[47,8]];
+  const source = symbols.length ? symbols : ['✦','⋆','✧'];
+  positions.forEach(([x,y], index) => {
+    const el = document.createElement('span');
+    el.className = 'page-ornament';
+    el.textContent = source[index % source.length];
+    el.style.cssText = `left:${x}%;top:${y}%;font-size:${28 + (index % 3) * 18}px`;
+    pageDecor.appendChild(el);
+  });
+  if (lightingMode !== 'none') {
+    pageDecor.classList.toggle('flashing', lightingMode === 'flashing');
+    const colors = activeLightColors.length ? activeLightColors : ['hsl(48 90% 65%)', 'hsl(205 90% 65%)'];
+    colors.slice(0, 4).forEach((color, index) => {
+      const orb = document.createElement('i');
+      orb.className = 'light-orb';
+      orb.style.cssText = `left:${index % 2 ? 5 : 45}%;top:${index % 2 ? 50 : -5}%;background:${color};animation-delay:${index * -1.7}s`;
+      pageDecor.appendChild(orb);
+    });
+  } else {
+    pageDecor.classList.remove('flashing');
+  }
+}
+
+function applyGlobalPalette(world) {
+  if (!world) return;
+  const root = document.documentElement.style;
+  root.setProperty('--paper', world.paper);
+  root.setProperty('--ink', world.ink);
+  root.setProperty('--muted', world.muted);
+  root.setProperty('--line', world.line);
+  root.setProperty('--accent', world.accent);
+  root.setProperty('--surface', world.surface);
+  root.setProperty('--page-glow', world.glow);
+}
+
+function hashPrompt(prompt) {
+  let hash = 0;
+  for (const char of prompt) hash = ((hash << 5) - hash + char.charCodeAt(0)) | 0;
+  return Math.abs(hash);
+}
+
+function generatePromptWorld(prompt) {
+  const hash = hashPrompt(prompt);
+  const namedColors = Object.keys(colorHues).filter(color => new RegExp(`\\b${color}\\b`).test(prompt));
+  const hues = namedColors.map(color => colorHues[color]);
+  const hue = hues.length ? hues[0] : hash % 360;
+  const isDark = /dark|moody|gothic|black|night|dramatic/.test(prompt);
+  const isPastel = /pastel|soft|gentle|airy|light/.test(prompt);
+  const saturation = isPastel ? 42 : 52 + (hash % 22);
+  if (isDark) {
+    const darkBackground = hues.length > 1 ? `linear-gradient(135deg, ${hues.map(value => `hsl(${value} ${saturation}% 22%)`).join(', ')})` : `hsl(${hue} ${saturation}% 26%)`;
+    return {
+      paper:`hsl(${hue} ${Math.max(18, saturation - 30)}% 12%)`, ink:`hsl(${hue} 24% 94%)`,
+      muted:`hsl(${hue} 14% 68%)`, line:`hsl(${hue} 18% 27%)`, accent:`hsl(${(hue + 42) % 360} 72% 67%)`,
+      surface:'rgba(255,255,255,.055)', glow:`hsla(${hue} 78% 58% / .17)`,
+      bg:darkBackground, fg:'#fffaf0', soft:'rgba(255,250,240,.68)'
+    };
+  }
+  const pageBackground = hues.length > 1 ? `linear-gradient(135deg, ${hues.map(value => `hsl(${value} 38% 94%)`).join(', ')})` : `hsl(${hue} ${isPastel ? 38 : 31}% 94%)`;
+  const cardBackground = hues.length > 1 ? `linear-gradient(135deg, ${hues.map(value => `hsl(${value} ${saturation}% ${isPastel ? 67 : 43}%)`).join(', ')})` : `hsl(${hue} ${saturation}% ${isPastel ? 67 : 43}%)`;
+  return {
+    paper:pageBackground, ink:`hsl(${hue} 25% 20%)`,
+    muted:`hsl(${hue} 13% 47%)`, line:`hsl(${hue} 24% 82%)`, accent:`hsl(${hue} ${saturation}% 48%)`,
+    surface:'rgba(255,255,255,.4)', glow:`hsla(${hue} 70% 55% / .14)`,
+    bg:cardBackground, fg:'#fffaf0', soft:'rgba(255,250,240,.7)'
+  };
+}
+
+function createFromPrompt() {
+  const prompt = designPrompt.value.trim().toLowerCase();
+  const status = document.querySelector('#designStatus');
+  const button = document.querySelector('#createDesign');
+  if (!prompt) {
+    status.textContent = 'Describe a theme first — anything you can imagine.';
+    designPrompt.focus();
+    return;
+  }
+  button.classList.add('is-creating');
+  status.textContent = 'Dreaming up your design…';
+  setTimeout(() => {
+    const scored = designWorlds.map(world => ({ world, score: world.words.reduce((total, word) => total + (prompt.includes(word) ? 1 : 0), 0) }));
+    scored.sort((a,b) => b.score - a.score);
+    const requestedColors = Object.keys(colorHues).filter(color => new RegExp(`\\b${color}\\b`).test(prompt));
+    const hasNamedColor = requestedColors.length > 0;
+    const world = scored[0].score && !hasNamedColor ? scored[0].world : generatePromptWorld(prompt);
+    lightingMode = /flash|flashing|blinking|strobe/.test(prompt) ? 'flashing' : /moving light|dancing light|light beam|spotlight|glowing light|lights/.test(prompt) ? 'moving' : 'none';
+    activeLightColors = requestedColors.map(color => `hsl(${colorHues[color]} 90% 62%)`);
+    preview.classList.toggle('lights-moving', lightingMode === 'moving' || lightingMode === 'flashing');
+    preview.classList.toggle('lights-flashing', lightingMode === 'flashing');
+    const foundSymbols = [];
+    symbolRules.forEach(rule => {
+      if (rule.words.some(word => prompt.includes(word))) foundSymbols.push(...rule.symbols);
+    });
+    customSymbols = [...new Set(foundSymbols)];
+    if (!customSymbols.length) customSymbols = ['✦','✧','⋆'];
+    activeTheme = { ...activeTheme, bg: world.bg, fg: world.fg, soft: world.soft };
+    applyGlobalPalette(world);
+    document.querySelectorAll('.theme-card').forEach(card => { card.classList.remove('active'); card.setAttribute('aria-checked', 'false'); });
+    document.querySelectorAll('.decor-button').forEach(card => card.classList.remove('active'));
+    applyTheme();
+    button.classList.remove('is-creating');
+    const colorLabel = requestedColors.length ? requestedColors.join(' + ') : 'custom';
+    status.textContent = `Created a ${colorLabel} world${lightingMode !== 'none' ? ` with ${lightingMode} lights` : ''}.`;
+  }, 480);
+}
+
+function parseLocalDate(value) {
+  if (!value) return null;
+  const [year, month, day] = value.split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
+
+function updateCountdown() {
+  const eventDate = parseLocalDate(eventDateInput.value);
+  const chosenCurrent = parseLocalDate(currentDateInput.value);
+  if (!eventDate || !chosenCurrent) return;
+  const [eventHour, eventMinute] = (eventTimeInput.value || '00:00').split(':').map(Number);
+  eventDate.setHours(eventHour, eventMinute, 0, 0);
+  const elapsedToday = Date.now() - new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+  const simulatedNow = chosenCurrent.getTime() + elapsedToday;
+  const difference = Math.max(0, eventDate.getTime() - simulatedNow);
+  const days = Math.floor(difference / 86400000);
+  const hours = Math.floor((difference / 3600000) % 24);
+  const minutes = Math.floor((difference / 60000) % 60);
+  const seconds = Math.floor((difference / 1000) % 60);
+  document.querySelector('#days').textContent = String(days).padStart(2, '0');
+  document.querySelector('#hours').textContent = String(hours).padStart(2, '0');
+  document.querySelector('#minutes').textContent = String(minutes).padStart(2, '0');
+  document.querySelector('#seconds').textContent = String(seconds).padStart(2, '0');
+  document.querySelector('#dateLine').textContent = eventDate.toLocaleString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+}
+
+titleInput.addEventListener('input', () => document.querySelector('#previewTitle').textContent = titleInput.value.trim() || 'Your Big Day');
+eventDateInput.addEventListener('change', updateCountdown);
+eventTimeInput.addEventListener('input', updateCountdown);
+currentDateInput.addEventListener('change', () => {
+  eventDateInput.min = currentDateInput.value;
+  const selectedCurrent = parseLocalDate(currentDateInput.value);
+  selectedCurrent.setDate(selectedCurrent.getDate() + 1);
+  eventDateInput.value = localISO(selectedCurrent);
+  updateCountdown();
+});
+
+document.querySelector('#createDesign').addEventListener('click', createFromPrompt);
+designPrompt.addEventListener('keydown', event => {
+  if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') createFromPrompt();
+});
+document.querySelectorAll('.prompt-examples button').forEach(button => {
+  button.addEventListener('click', () => {
+    designPrompt.value = button.dataset.prompt;
+    createFromPrompt();
+  });
+});
+
+document.querySelector('#copyButton').addEventListener('click', async () => {
+  const text = `${titleInput.value || 'My countdown'} — ${document.querySelector('#days').textContent} days to go! ${document.querySelector('#dateLine').textContent}`;
+  try {
+    await navigator.clipboard.writeText(text);
+    document.querySelector('#shareStatus').textContent = 'Countdown details copied to your clipboard.';
+  } catch {
+    document.querySelector('#shareStatus').textContent = text;
+  }
+  setTimeout(() => document.querySelector('#shareStatus').textContent = '', 3500);
+});
+
+applyTheme();
+renderDecorations();
+updateCountdown();
+setInterval(updateCountdown, 1000);
