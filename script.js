@@ -2,7 +2,8 @@ const themes = [
   { id: 'sunset', name: 'Sunset Glow', note: 'Warm & dreamy', bg: '#c95f4c', fg: '#fff6e9', soft: 'rgba(255,246,233,.68)', swatch: 'linear-gradient(145deg,#e99a77,#b94d45)', spark: '#ffe7a5' },
   { id: 'midnight', name: 'Midnight', note: 'Deep & celestial', bg: '#20243f', fg: '#f5eee1', soft: 'rgba(245,238,225,.64)', swatch: 'linear-gradient(145deg,#343b67,#17192e)', spark: '#f2d488' },
   { id: 'meadow', name: 'Wild Meadow', note: 'Fresh & natural', bg: '#637963', fg: '#fff9e9', soft: 'rgba(255,249,233,.68)', swatch: 'linear-gradient(145deg,#9faf88,#506753)', spark: '#f5df9b' },
-  { id: 'blush', name: 'Soft Blush', note: 'Sweet & romantic', bg: '#dba0a0', fg: '#fffaf2', soft: 'rgba(255,250,242,.72)', swatch: 'linear-gradient(145deg,#ecc4bb,#ce898e)', spark: '#fff1bb' }
+  { id: 'blush', name: 'Soft Blush', note: 'Sweet & romantic', bg: '#dba0a0', fg: '#fffaf2', soft: 'rgba(255,250,242,.72)', swatch: 'linear-gradient(145deg,#ecc4bb,#ce898e)', spark: '#fff1bb' },
+  { id: 'concert', name: 'Neon Concert', note: 'Electric & bold', bg: 'linear-gradient(145deg,#161026,#5e1d80)', fg: '#fff7ff', soft: 'rgba(255,247,255,.7)', swatch: 'linear-gradient(145deg,#0d0b18,#7526a0,#ec2f86)', spark: '#65f7ff' }
 ];
 
 const decorations = [
@@ -41,6 +42,7 @@ const designWorlds = [
   { words: ['sunset','warm','boho','desert','terracotta'], paper:'#f5eee2', ink:'#412d25', muted:'#8b746a', line:'#ddcfc0', accent:'#d45e45', surface:'rgba(255,255,255,.3)', glow:'rgba(212,94,69,.12)', bg:'#bd5947', fg:'#fff5e7', soft:'rgba(255,245,231,.68)' },
   { words: ['party','birthday','colorful','rainbow','joyful','fun'], paper:'#fff7df', ink:'#332b4f', muted:'#746d8b', line:'#e5d7bf', accent:'#7657d5', surface:'rgba(255,255,255,.48)', glow:'rgba(247,98,136,.15)', bg:'#7657d5', fg:'#fffbea', soft:'rgba(255,251,234,.72)' },
   { words: ['winter','snow','ice','frozen','christmas'], paper:'#edf5f7', ink:'#263c4d', muted:'#728894', line:'#cbdde2', accent:'#527fa0', surface:'rgba(255,255,255,.52)', glow:'rgba(99,165,196,.15)', bg:'#668da8', fg:'#ffffff', soft:'rgba(255,255,255,.72)' }
+  ,{ words: ['concert','music','festival','stage','neon','dj','disco','rave','band'], paper:'#0d0b18', ink:'#fff7ff', muted:'#aaa1b8', line:'#312940', accent:'#ec2f86', surface:'rgba(255,255,255,.055)', glow:'rgba(101,247,255,.18)', bg:'linear-gradient(145deg,#161026,#5e1d80 58%,#a51f68)', fg:'#fff7ff', soft:'rgba(255,247,255,.7)' }
 ];
 
 const symbolRules = [
@@ -63,6 +65,29 @@ const colorHues = {
   green: 132, mint: 158, teal: 178, aqua: 188, blue: 218, navy: 228,
   purple: 270, violet: 282, lavender: 276, pink: 332, rose: 344, brown: 24
 };
+
+const patternRules = [
+  { name:'striped', words:['stripe','stripes','striped','lines'], image:'repeating-linear-gradient(45deg, transparent 0 14px, var(--accent) 14px 17px)', size:'40px 40px', opacity:'.18' },
+  { name:'polka dot', words:['polka','dots','dotted','dot pattern'], image:'radial-gradient(circle, var(--accent) 2.5px, transparent 3px)', size:'24px 24px', opacity:'.2' },
+  { name:'soft gingham checkerboard', words:['checker','checkered','checkerboard','chess'], image:'linear-gradient(90deg, color-mix(in srgb, var(--accent) 42%, transparent) 50%, transparent 50%), linear-gradient(color-mix(in srgb, var(--accent) 42%, transparent) 50%, transparent 50%)', size:'72px 72px', opacity:'.72' },
+  { name:'grid', words:['grid','graph','squares'], image:'linear-gradient(var(--accent) 1.5px, transparent 1.5px), linear-gradient(90deg, var(--accent) 1.5px, transparent 1.5px)', size:'30px 30px', opacity:'.16' },
+  { name:'waves', words:['wave','wavy','waves','ocean pattern'], image:'radial-gradient(ellipse at 50% 100%, transparent 12px, var(--accent) 13px 15px, transparent 16px)', size:'34px 18px', opacity:'.2' },
+  { name:'diamonds', words:['diamond','diamonds','geometric','argyle'], image:'linear-gradient(45deg, transparent 45%, var(--accent) 46% 54%, transparent 55%), linear-gradient(-45deg, transparent 45%, var(--accent) 46% 54%, transparent 55%)', size:'38px 38px', opacity:'.16' },
+  { name:'stars', words:['star pattern','pattern of stars','starry pattern'], image:'radial-gradient(circle, var(--accent) 1.5px, transparent 2px), radial-gradient(circle, var(--accent) 2px, transparent 2.5px)', size:'28px 28px', opacity:'.21' },
+  { name:'floral', words:['floral pattern','flower pattern','pattern of flowers','botanical pattern'], image:'radial-gradient(ellipse at 50% 0%, var(--accent) 0 3px, transparent 4px), radial-gradient(ellipse at 0% 50%, var(--accent) 0 3px, transparent 4px)', size:'30px 30px', opacity:'.2' },
+  { name:'confetti', words:['confetti pattern','sprinkles','sprinkle pattern'], image:'linear-gradient(65deg, transparent 45%, var(--accent) 46% 54%, transparent 55%)', size:'23px 31px', opacity:'.22' }
+  ,{ name:'plaid', words:['plaid','tartan','crosshatch'], image:'repeating-linear-gradient(0deg, transparent 0 18px, var(--accent) 18px 22px), repeating-linear-gradient(90deg, transparent 0 18px, var(--accent) 18px 22px)', size:'44px 44px', opacity:'.18' }
+  ,{ name:'gingham', words:['gingham','picnic pattern'], image:'linear-gradient(90deg, var(--accent) 50%, transparent 50%), linear-gradient(var(--accent) 50%, transparent 50%)', size:'28px 28px', opacity:'.14' }
+  ,{ name:'chevron', words:['chevron','zigzag','zig zag'], image:'linear-gradient(135deg, var(--accent) 25%, transparent 25%) -18px 0, linear-gradient(225deg, var(--accent) 25%, transparent 25%) -18px 0, linear-gradient(315deg, var(--accent) 25%, transparent 25%), linear-gradient(45deg, var(--accent) 25%, transparent 25%)', size:'36px 36px', opacity:'.18' }
+  ,{ name:'honeycomb', words:['honeycomb','honey comb','hexagon','hexagons','bee pattern'], image:'radial-gradient(circle at 0 50%, transparent 9px, var(--accent) 10px 11px, transparent 12px), radial-gradient(circle at 100% 50%, transparent 9px, var(--accent) 10px 11px, transparent 12px)', size:'28px 24px', opacity:'.2' }
+  ,{ name:'circles', words:['circle pattern','circles','bubbles','bubble pattern','rings'], image:'radial-gradient(circle, transparent 7px, var(--accent) 8px 10px, transparent 11px)', size:'29px 29px', opacity:'.2' }
+  ,{ name:'hearts', words:['heart pattern','pattern of hearts','hearts pattern'], image:'radial-gradient(circle at 35% 35%, var(--accent) 0 3px, transparent 4px), radial-gradient(circle at 65% 35%, var(--accent) 0 3px, transparent 4px)', size:'25px 25px', opacity:'.22' }
+  ,{ name:'bricks', words:['brick','bricks','brickwork','wall pattern'], image:'linear-gradient(var(--accent) 1.5px, transparent 1.5px), linear-gradient(90deg, var(--accent) 1.5px, transparent 1.5px)', size:'42px 21px', opacity:'.17' }
+  ,{ name:'scallops', words:['scallop','scallops','fish scale','mermaid scale'], image:'radial-gradient(circle at 50% 0, transparent 14px, var(--accent) 15px 17px, transparent 18px)', size:'30px 20px', opacity:'.21' }
+  ,{ name:'speckles', words:['speckle','speckles','speckled','terrazzo','grain','freckles'], image:'radial-gradient(circle at 20% 30%, var(--accent) 0 2px, transparent 2.5px), radial-gradient(circle at 75% 65%, var(--accent) 0 3px, transparent 3.5px), radial-gradient(circle at 45% 85%, var(--accent) 0 1.5px, transparent 2px)', size:'38px 38px', opacity:'.24' }
+  ,{ name:'pinstripes', words:['pinstripe','pinstripes','thin stripes'], image:'repeating-linear-gradient(90deg, transparent 0 9px, var(--accent) 9px 10px)', size:'30px 30px', opacity:'.2' }
+  ,{ name:'sound waves', words:['sound wave','soundwave','equalizer','audio pattern','music pattern'], image:'repeating-linear-gradient(90deg, var(--accent) 0 3px, transparent 3px 9px)', size:'45px 24px', opacity:'.2' }
+];
 
 function localISO(date) {
   const offset = date.getTimezoneOffset() * 60000;
@@ -87,7 +112,15 @@ themes.forEach(theme => {
     customSymbols = [];
     lightingMode = 'none';
     activeLightColors = [];
+    applyPatternFromPrompt('');
     preview.classList.remove('lights-moving', 'lights-flashing');
+    if (theme.id === 'concert') {
+      lightingMode = 'moving';
+      activeLightColors = ['hsl(330 90% 62%)', 'hsl(184 90% 62%)', 'hsl(275 90% 65%)'];
+      customSymbols = ['♪','♫','♬','✦','★'];
+      preview.classList.add('lights-moving');
+      applyPatternFromPrompt('equalizer');
+    }
     document.querySelectorAll('.theme-card').forEach(card => {
       const selected = card === button;
       card.classList.toggle('active', selected);
@@ -123,7 +156,7 @@ function applyTheme(updateWholeSite = false) {
   preview.style.setProperty('--preview-fg', activeTheme.fg);
   preview.style.setProperty('--preview-soft', activeTheme.soft);
   if (updateWholeSite) {
-    const quickWorlds = { sunset: designWorlds[4], midnight: designWorlds[0], meadow: designWorlds[2], blush: designWorlds[3] };
+    const quickWorlds = { sunset: designWorlds[4], midnight: designWorlds[0], meadow: designWorlds[2], blush: designWorlds[3], concert: designWorlds[7] };
     applyGlobalPalette(quickWorlds[activeTheme.id]);
   }
   renderDecorations();
@@ -221,6 +254,22 @@ function generatePromptWorld(prompt) {
   };
 }
 
+function applyPatternFromPrompt(prompt) {
+  const normalized = prompt.toLowerCase().replace(/[-_]/g, ' ').replace(/\s+/g, ' ').trim();
+  const match = patternRules
+    .flatMap(rule => rule.words.filter(word => normalized.includes(word)).map(word => ({ rule, length: word.length })))
+    .sort((a, b) => b.length - a.length)[0];
+  const pattern = match?.rule;
+  const root = document.documentElement.style;
+  const previewImage = pattern ? pattern.image.split('var(--accent)').join('rgba(255,255,255,.72)') : 'none';
+  root.setProperty('--page-pattern-image', pattern ? pattern.image : 'none');
+  root.setProperty('--preview-pattern-image', previewImage);
+  root.setProperty('--pattern-size', pattern ? pattern.size : '40px 40px');
+  root.setProperty('--pattern-opacity', pattern ? pattern.opacity : '0');
+  root.setProperty('--preview-pattern-opacity', pattern ? '.3' : '0');
+  return pattern?.name || '';
+}
+
 function createFromPrompt() {
   const prompt = designPrompt.value.trim().toLowerCase();
   const status = document.querySelector('#designStatus');
@@ -238,8 +287,9 @@ function createFromPrompt() {
     const requestedColors = Object.keys(colorHues).filter(color => new RegExp(`\\b${color}\\b`).test(prompt));
     const hasNamedColor = requestedColors.length > 0;
     const world = scored[0].score && !hasNamedColor ? scored[0].world : generatePromptWorld(prompt);
-    lightingMode = /flash|flashing|blinking|strobe/.test(prompt) ? 'flashing' : /moving light|dancing light|light beam|spotlight|glowing light|lights/.test(prompt) ? 'moving' : 'none';
+    lightingMode = /flash|flashing|blinking|strobe/.test(prompt) ? 'flashing' : /moving light|dancing light|light beam|spotlight|glowing light|lights|concert|festival|stage|disco|rave/.test(prompt) ? 'moving' : 'none';
     activeLightColors = requestedColors.map(color => `hsl(${colorHues[color]} 90% 62%)`);
+    const patternName = applyPatternFromPrompt(/concert|music|festival|stage|dj|disco|rave|band/.test(prompt) && !/pattern|stripe|dot|checker|plaid|wave|grid|diamond|heart|brick|scallop|speckle/.test(prompt) ? `${prompt} equalizer` : prompt);
     preview.classList.toggle('lights-moving', lightingMode === 'moving' || lightingMode === 'flashing');
     preview.classList.toggle('lights-flashing', lightingMode === 'flashing');
     const foundSymbols = [];
@@ -255,7 +305,7 @@ function createFromPrompt() {
     applyTheme();
     button.classList.remove('is-creating');
     const colorLabel = requestedColors.length ? requestedColors.join(' + ') : 'custom';
-    status.textContent = `Created a ${colorLabel} world${lightingMode !== 'none' ? ` with ${lightingMode} lights` : ''}.`;
+    status.textContent = `Created a ${colorLabel} world${patternName ? ` with a ${patternName} pattern` : ''}${lightingMode !== 'none' ? ` and ${lightingMode} lights` : ''}.`;
   }, 480);
 }
 
