@@ -32,7 +32,13 @@ const musicChoice = document.querySelector('#musicChoice');
 const musicToggle = document.querySelector('#musicToggle');
 const lockScreen = document.querySelector('#lockScreen');
 const celebrationLayer = document.querySelector('#celebrationLayer');
-const savedStartingTheme = localStorage.getItem('daydream-starting-theme');
+function readStartingTheme() {
+  try { return window.localStorage?.getItem('daydream-starting-theme') || ''; } catch { return ''; }
+}
+function saveStartingTheme(themeId) {
+  try { window.localStorage?.setItem('daydream-starting-theme', themeId); } catch {}
+}
+const savedStartingTheme = readStartingTheme();
 let activeTheme = savedStartingTheme ? (themes.find(theme => theme.id === savedStartingTheme) || themes[0]) : { ...themes[0], bg:'#ffffff', fg:'#111111', soft:'rgba(17,17,17,.62)' };
 let activeDecor = new Set(['stars', 'sparkles']);
 let customSymbols = [];
@@ -184,7 +190,7 @@ document.querySelector('#randomDecorations').addEventListener('click', () => {
 });
 
 document.querySelector('#setStartingDesign').addEventListener('click', () => {
-  localStorage.setItem('daydream-starting-theme', activeTheme.id);
+  saveStartingTheme(activeTheme.id);
   document.querySelector('#extrasStatus').textContent = `${activeTheme.name} is now your starting design.`;
 });
 
