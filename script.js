@@ -400,8 +400,15 @@ musicToggle.addEventListener('click', async () => {
     stopMusic();
     return;
   }
-  audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
-  await audioContext.resume();
+  try {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) throw new Error('Audio is not supported in this browser.');
+    audioContext ||= new AudioContextClass();
+    await audioContext.resume();
+  } catch (error) {
+    document.querySelector('#extrasStatus').textContent = 'Music is unavailable in this browser, but the countdown still works.';
+    return;
+  }
   musicStep = 0;
   playMusicNote();
   musicTimer = setInterval(playMusicNote, melodies[musicChoice.value].tempo);
