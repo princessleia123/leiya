@@ -32,7 +32,8 @@ const musicChoice = document.querySelector('#musicChoice');
 const musicToggle = document.querySelector('#musicToggle');
 const lockScreen = document.querySelector('#lockScreen');
 const celebrationLayer = document.querySelector('#celebrationLayer');
-let activeTheme = themes[0];
+const savedStartingTheme = localStorage.getItem('daydream-starting-theme');
+let activeTheme = savedStartingTheme ? (themes.find(theme => theme.id === savedStartingTheme) || themes[0]) : { ...themes[0], bg:'#ffffff', fg:'#111111', soft:'rgba(17,17,17,.62)' };
 let activeDecor = new Set(['stars', 'sparkles']);
 let customSymbols = [];
 let lightingMode = 'none';
@@ -70,9 +71,16 @@ const symbolRules = [
 ];
 
 const colorHues = {
-  red: 5, coral: 12, orange: 28, gold: 44, yellow: 52, lime: 82,
-  green: 132, mint: 158, teal: 178, aqua: 188, blue: 218, navy: 228,
-  purple: 270, violet: 282, lavender: 276, pink: 332, rose: 344, brown: 24
+  red: 5, scarlet: 4, crimson: 350, cherry: 350, coral: 12, salmon: 13,
+  orange: 28, tangerine: 30, peach: 20, apricot: 25, gold: 44, amber: 38,
+  yellow: 52, lemon: 56, mustard: 47, lime: 82, chartreuse: 90,
+  green: 132, emerald: 145, forest: 125, sage: 105, olive: 78, mint: 158,
+  teal: 178, turquoise: 181, aqua: 188, cyan: 190, seafoam: 164,
+  blue: 218, sky: 202, azure: 207, cobalt: 220, royal: 224, navy: 228,
+  purple: 270, violet: 282, indigo: 255, lavender: 276, lilac: 278,
+  magenta: 315, fuchsia: 315, pink: 332, rose: 344, mauve: 325,
+  brown: 24, tan: 30, beige: 38, cream: 45, ivory: 48, silver: 210,
+  gray: 220, grey: 220, charcoal: 220, black: 0, white: 0
 };
 
 const patternRules = [
@@ -160,6 +168,26 @@ decorations.forEach(decor => {
   decorationList.appendChild(button);
 });
 
+document.querySelector('#randomDecorations').addEventListener('click', () => {
+  customSymbols = [];
+  const randomThemeIndex = Math.floor(Math.random() * themes.length);
+  themeGrid.querySelectorAll('.theme-card')[randomThemeIndex].click();
+  const available = decorations.filter(decor => decor.id !== 'none');
+  const count = 1 + Math.floor(Math.random() * 3);
+  const shuffled = [...available].sort(() => Math.random() - .5);
+  activeDecor = new Set(shuffled.slice(0, count).map(decor => decor.id));
+  document.querySelectorAll('.decor-button').forEach((item, index) => {
+    item.classList.toggle('active', activeDecor.has(decorations[index].id));
+  });
+  renderDecorations();
+  document.querySelector('#extrasStatus').textContent = `A fresh ${themes[randomThemeIndex].name} style is ready.`;
+});
+
+document.querySelector('#setStartingDesign').addEventListener('click', () => {
+  localStorage.setItem('daydream-starting-theme', activeTheme.id);
+  document.querySelector('#extrasStatus').textContent = `${activeTheme.name} is now your starting design.`;
+});
+
 function applyTheme(updateWholeSite = false) {
   preview.style.setProperty('--preview-bg', activeTheme.bg);
   preview.style.setProperty('--preview-fg', activeTheme.fg);
@@ -242,10 +270,13 @@ function generatePromptWorld(prompt) {
   const hues = namedColors.map(color => colorHues[color]);
   const hue = hues.length ? hues[0] : hash % 360;
   const isDark = /dark|moody|gothic|black|night|dramatic/.test(prompt);
-  const isPastel = /pastel|soft|gentle|airy|light/.test(prompt);
+  const isPastel = /pastel|pastel palette|pastel colors|pastel rainbow|soft|gentle|airy|light/.test(prompt);
   const saturation = isPastel ? 42 : 52 + (hash % 22);
+  const pageStop = color => color === 'black' ? '#111118' : color === 'white' ? '#fafafa' : `hsl(${colorHues[color]} ${isPastel ? 38 : 31}% 94%)`;
+  const cardStop = color => color === 'black' ? '#171521' : color === 'white' ? '#dedee7' : `hsl(${colorHues[color]} ${saturation}% ${isPastel ? 67 : 43}%)`;
+  const pastelHues = [0, 48, 105, 180, 235, 300].map(offset => (hue + offset) % 360);
   if (isDark) {
-    const darkBackground = hues.length > 1 ? `linear-gradient(135deg, ${hues.map(value => `hsl(${value} ${saturation}% 22%)`).join(', ')})` : `hsl(${hue} ${saturation}% 26%)`;
+    const darkBackground = namedColors.length > 1 ? `linear-gradient(135deg, ${namedColors.map(color => color === 'black' ? '#101018' : color === 'white' ? '#f5f5f5' : `hsl(${colorHues[color]} ${saturation}% 22%)`).join(', ')})` : namedColors[0] === 'black' ? '#101018' : `hsl(${hue} ${saturation}% 26%)`;
     return {
       paper:`hsl(${hue} ${Math.max(18, saturation - 30)}% 12%)`, ink:`hsl(${hue} 24% 94%)`,
       muted:`hsl(${hue} 14% 68%)`, line:`hsl(${hue} 18% 27%)`, accent:`hsl(${(hue + 42) % 360} 72% 67%)`,
@@ -253,8 +284,8 @@ function generatePromptWorld(prompt) {
       bg:darkBackground, fg:'#fffaf0', soft:'rgba(255,250,240,.68)'
     };
   }
-  const pageBackground = hues.length > 1 ? `linear-gradient(135deg, ${hues.map(value => `hsl(${value} 38% 94%)`).join(', ')})` : `hsl(${hue} ${isPastel ? 38 : 31}% 94%)`;
-  const cardBackground = hues.length > 1 ? `linear-gradient(135deg, ${hues.map(value => `hsl(${value} ${saturation}% ${isPastel ? 67 : 43}%)`).join(', ')})` : `hsl(${hue} ${saturation}% ${isPastel ? 67 : 43}%)`;
+  const pageBackground = namedColors.length > 1 ? `linear-gradient(135deg, ${namedColors.map(pageStop).join(', ')})` : isPastel && !namedColors.length ? `linear-gradient(135deg, ${pastelHues.map(value => `hsl(${value} 48% 92%)`).join(', ')})` : namedColors[0] === 'white' ? '#fafafa' : `hsl(${hue} ${isPastel ? 38 : 31}% 94%)`;
+  const cardBackground = namedColors.length > 1 ? `linear-gradient(135deg, ${namedColors.map(cardStop).join(', ')})` : isPastel && !namedColors.length ? `linear-gradient(135deg, ${pastelHues.map(value => `hsl(${value} 60% 70%)`).join(', ')})` : namedColors[0] === 'white' ? '#dedee7' : `hsl(${hue} ${saturation}% ${isPastel ? 67 : 43}%)`;
   return {
     paper:pageBackground, ink:`hsl(${hue} 25% 20%)`,
     muted:`hsl(${hue} 13% 47%)`, line:`hsl(${hue} 24% 82%)`, accent:`hsl(${hue} ${saturation}% 48%)`,
