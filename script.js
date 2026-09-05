@@ -444,6 +444,8 @@ document.querySelector('#lockCountdown').addEventListener('click', () => {
   countdownPassword = password;
   lockScreen.hidden = false;
   preview.classList.add('is-locked');
+  titleInput.type = 'password';
+  titleInput.readOnly = true;
   document.querySelector('#passwordEntry').value = '';
   document.querySelector('#lockMessage').textContent = '';
   status.textContent = 'Your countdown is now locked.';
@@ -456,6 +458,8 @@ function unlockCountdown() {
   if (entry.value === countdownPassword) {
     lockScreen.hidden = true;
     preview.classList.remove('is-locked');
+    titleInput.type = 'text';
+    titleInput.readOnly = false;
     entry.value = '';
     document.querySelector('#extrasStatus').textContent = 'Countdown unlocked.';
   } else {

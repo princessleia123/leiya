@@ -101,6 +101,7 @@ textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in
 .texture { position: absolute; inset: 0; z-index: 1; opacity: var(--preview-pattern-opacity, .34); background-image: var(--preview-pattern-image); background-size: var(--pattern-size); }
 .preview-content { width: 88%; text-align: center; position: relative; z-index: 2; transition: transform .35s ease; }
 .preview.is-locked .preview-content { transform: translateY(-105px) scale(.88); }
+.preview.is-locked #previewTitle { visibility: hidden; }
 .preview-kicker { color: var(--preview-soft); font-size: 9px; font-weight: 700; letter-spacing: .3em; margin: 0 0 19px; }
 .preview h2 { font: 700 italic clamp(39px, 4.3vw, 60px)/1 var(--serif); letter-spacing: -.03em; margin: 0; }
 .divider { display: flex; align-items: center; gap: 13px; justify-content: center; margin: 25px auto 32px; width: 130px; color: var(--preview-soft); font-size: 10px; }
