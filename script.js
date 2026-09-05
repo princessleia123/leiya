@@ -28,11 +28,20 @@ const currentDateInput = document.querySelector('#currentDate');
 const decorLayer = document.querySelector('#decorLayer');
 const pageDecor = document.querySelector('#pageDecor');
 const designPrompt = document.querySelector('#designPrompt');
+const musicChoice = document.querySelector('#musicChoice');
+const musicToggle = document.querySelector('#musicToggle');
+const lockScreen = document.querySelector('#lockScreen');
+const celebrationLayer = document.querySelector('#celebrationLayer');
 let activeTheme = themes[0];
 let activeDecor = new Set(['stars', 'sparkles']);
 let customSymbols = [];
 let lightingMode = 'none';
 let activeLightColors = [];
+let countdownPassword = '';
+let audioContext;
+let musicTimer;
+let musicStep = 0;
+let hasCelebrated = false;
 
 const designWorlds = [
   { words: ['midnight','night','space','galaxy','celestial','moon','starry'], paper:'#11162d', ink:'#f7efdf', muted:'#aaaac0', line:'#343955', accent:'#e5c66f', surface:'rgba(255,255,255,.06)', glow:'rgba(94,113,255,.18)', bg:'#20294d', fg:'#fff5d7', soft:'rgba(255,245,215,.65)' },
@@ -324,6 +333,12 @@ function updateCountdown() {
   const elapsedToday = Date.now() - new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
   const simulatedNow = chosenCurrent.getTime() + elapsedToday;
   const difference = Math.max(0, eventDate.getTime() - simulatedNow);
+  if (difference === 0 && !hasCelebrated) {
+    hasCelebrated = true;
+    triggerCelebration();
+  } else if (difference > 0) {
+    hasCelebrated = false;
+  }
   const days = Math.floor(difference / 86400000);
   const hours = Math.floor((difference / 3600000) % 24);
   const minutes = Math.floor((difference / 60000) % 60);
@@ -334,6 +349,118 @@ function updateCountdown() {
   document.querySelector('#seconds').textContent = String(seconds).padStart(2, '0');
   document.querySelector('#dateLine').textContent = eventDate.toLocaleString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
 }
+
+const melodies = {
+  dreamy: { notes:[261.63,329.63,392,493.88,392,329.63], tempo:620, wave:'sine' },
+  celebration: { notes:[392,523.25,659.25,523.25,698.46,783.99], tempo:330, wave:'triangle' },
+  concert: { notes:[110,146.83,164.81,220,196,146.83], tempo:260, wave:'sawtooth' },
+  peaceful: { notes:[220,277.18,329.63,277.18,246.94,220], tempo:820, wave:'sine' }
+};
+
+function playMusicNote() {
+  const melody = melodies[musicChoice.value];
+  if (!audioContext || audioContext.state === 'closed') return;
+  const oscillator = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+  oscillator.type = melody.wave;
+  oscillator.frequency.value = melody.notes[musicStep++ % melody.notes.length];
+  gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.055, audioContext.currentTime + .04);
+  gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + .55);
+  oscillator.connect(gain).connect(audioContext.destination);
+  oscillator.start();
+  oscillator.stop(audioContext.currentTime + .6);
+}
+
+function stopMusic() {
+  clearInterval(musicTimer);
+  musicTimer = undefined;
+  musicToggle.textContent = '▶ Play';
+  musicToggle.classList.remove('playing');
+}
+
+function triggerCelebration() {
+  celebrationLayer.innerHTML = '';
+  const pieces = ['✦','◆','●','▲','♥','★','▪'];
+  for (let index = 0; index < 48; index++) {
+    const piece = document.createElement('span');
+    piece.className = 'celebration-piece';
+    piece.textContent = pieces[index % pieces.length];
+    piece.style.cssText = `left:${(index * 23) % 100}%;--fall-delay:${(index % 12) * .08}s;--fall-speed:${2.2 + (index % 7) * .18}s;--drift:${-70 + (index % 9) * 18}px;--spin:${180 + (index % 6) * 90}deg`;
+    celebrationLayer.appendChild(piece);
+  }
+  preview.classList.remove('celebrating');
+  void preview.offsetWidth;
+  preview.classList.add('celebrating');
+  setTimeout(() => preview.classList.remove('celebrating'), 4300);
+}
+
+musicToggle.addEventListener('click', async () => {
+  if (musicTimer) {
+    stopMusic();
+    return;
+  }
+  audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
+  await audioContext.resume();
+  musicStep = 0;
+  playMusicNote();
+  musicTimer = setInterval(playMusicNote, melodies[musicChoice.value].tempo);
+  musicToggle.textContent = 'Ⅱ Pause';
+  musicToggle.classList.add('playing');
+});
+
+musicChoice.addEventListener('change', () => {
+  if (!musicTimer) return;
+  clearInterval(musicTimer);
+  musicStep = 0;
+  playMusicNote();
+  musicTimer = setInterval(playMusicNote, melodies[musicChoice.value].tempo);
+});
+
+document.querySelector('#previewCelebration').addEventListener('click', async () => {
+  triggerCelebration();
+  if (!musicTimer) {
+    musicChoice.value = 'celebration';
+    musicToggle.click();
+    setTimeout(stopMusic, 4300);
+  }
+  document.querySelector('#extrasStatus').textContent = 'Celebration mode previewing now!';
+});
+
+document.querySelector('#lockCountdown').addEventListener('click', () => {
+  const password = document.querySelector('#passwordSetup').value.trim();
+  const status = document.querySelector('#extrasStatus');
+  if (!password) {
+    status.textContent = 'Enter a password before locking the countdown.';
+    return;
+  }
+  countdownPassword = password;
+  lockScreen.hidden = false;
+  preview.classList.add('is-locked');
+  document.querySelector('#passwordEntry').value = '';
+  document.querySelector('#lockMessage').textContent = '';
+  status.textContent = 'Your countdown is now locked.';
+  setTimeout(() => document.querySelector('#passwordEntry').focus(), 50);
+});
+
+function unlockCountdown() {
+  const entry = document.querySelector('#passwordEntry');
+  const message = document.querySelector('#lockMessage');
+  if (entry.value === countdownPassword) {
+    lockScreen.hidden = true;
+    preview.classList.remove('is-locked');
+    entry.value = '';
+    document.querySelector('#extrasStatus').textContent = 'Countdown unlocked.';
+  } else {
+    message.textContent = 'That password is not quite right.';
+    entry.select();
+  }
+}
+
+document.querySelector('#unlockCountdown').addEventListener('click', unlockCountdown);
+document.querySelector('#passwordEntry').addEventListener('keydown', event => {
+  if (event.key === 'Enter') unlockCountdown();
+});
 
 titleInput.addEventListener('input', () => document.querySelector('#previewTitle').textContent = titleInput.value.trim() || 'Your Big Day');
 eventDateInput.addEventListener('change', updateCountdown);
@@ -347,6 +474,7 @@ currentDateInput.addEventListener('change', () => {
 });
 
 document.querySelector('#createDesign').addEventListener('click', createFromPrompt);
+document.querySelector('#countdownForm').addEventListener('submit', event => event.preventDefault());
 designPrompt.addEventListener('keydown', event => {
   if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') createFromPrompt();
 });

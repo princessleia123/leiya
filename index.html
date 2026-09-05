@@ -75,12 +75,44 @@
           <div class="theme-grid" id="themeGrid" role="radiogroup" aria-label="Choose a theme"></div>
         </div>
 
-        <div class="form-section last">
+        <div class="form-section">
           <div class="section-heading">
             <span class="section-number">03</span>
             <div><h2>Add some magic</h2><p>Sprinkle in the little things.</p></div>
           </div>
           <div class="decorations" id="decorationList"></div>
+        </div>
+
+        <div class="form-section last">
+          <div class="section-heading">
+            <span class="section-number">04</span>
+            <div><h2>Make it yours</h2><p>Add music or keep the surprise secret.</p></div>
+          </div>
+          <div class="extras-grid">
+            <div class="extra-card">
+              <span class="extra-icon">♫</span>
+              <div class="extra-copy"><strong>Background music</strong><small>Choose a sound for your countdown.</small></div>
+              <select id="musicChoice" aria-label="Background music">
+                <option value="dreamy">Dreamy</option>
+                <option value="celebration">Celebration</option>
+                <option value="concert">Concert</option>
+                <option value="peaceful">Peaceful</option>
+              </select>
+              <button class="extra-action" id="musicToggle" type="button">▶ Play</button>
+            </div>
+            <div class="extra-card">
+              <span class="extra-icon">◇</span>
+              <div class="extra-copy"><strong>Password lock</strong><small>Hide the countdown behind a secret word.</small></div>
+              <input id="passwordSetup" type="password" placeholder="Enter a password" autocomplete="new-password" />
+              <button class="extra-action" id="lockCountdown" type="button">Lock countdown</button>
+            </div>
+            <div class="extra-card celebration-card">
+              <span class="extra-icon">✦</span>
+              <div class="extra-copy"><strong>Celebration mode</strong><small>Confetti, lights, and music when time is up.</small></div>
+              <button class="extra-action" id="previewCelebration" type="button">Preview celebration</button>
+            </div>
+          </div>
+          <p class="extras-status" id="extrasStatus" role="status"></p>
         </div>
       </form>
 
@@ -89,6 +121,15 @@
         <div class="preview" id="preview">
           <div class="texture"></div>
           <div class="decor-layer" id="decorLayer" aria-hidden="true"></div>
+          <div class="celebration-layer" id="celebrationLayer" aria-hidden="true"></div>
+          <div class="lock-screen" id="lockScreen" hidden>
+            <span class="lock-symbol">◇</span>
+            <p>THIS COUNTDOWN IS A SECRET</p>
+            <h3>Something special is waiting.</h3>
+            <input id="passwordEntry" type="password" placeholder="Enter the password" autocomplete="current-password" />
+            <button id="unlockCountdown" type="button">Unlock countdown</button>
+            <small id="lockMessage" role="status"></small>
+          </div>
           <div class="preview-content">
             <p class="preview-kicker">COUNTING DOWN TO</p>
             <h2 id="previewTitle">The Big Day</h2>
