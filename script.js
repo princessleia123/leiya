@@ -365,7 +365,7 @@ function playMusicNote() {
   oscillator.type = melody.wave;
   oscillator.frequency.value = melody.notes[musicStep++ % melody.notes.length];
   gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.055, audioContext.currentTime + .04);
+  gain.gain.exponentialRampToValueAtTime(0.14, audioContext.currentTime + .04);
   gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + .55);
   oscillator.connect(gain).connect(audioContext.destination);
   oscillator.start();
@@ -395,7 +395,7 @@ function triggerCelebration() {
   setTimeout(() => preview.classList.remove('celebrating'), 4300);
 }
 
-musicToggle.addEventListener('click', async () => {
+musicToggle.addEventListener('click', () => {
   if (musicTimer) {
     stopMusic();
     return;
@@ -404,7 +404,7 @@ musicToggle.addEventListener('click', async () => {
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
     if (!AudioContextClass) throw new Error('Audio is not supported in this browser.');
     audioContext ||= new AudioContextClass();
-    await audioContext.resume();
+    audioContext.resume().catch(() => {});
   } catch (error) {
     document.querySelector('#extrasStatus').textContent = 'Music is unavailable in this browser, but the countdown still works.';
     return;
